@@ -8,11 +8,8 @@
    ============================================ */
 
 // === KONFIGURASI ===
-// URL Apps Script dibaca dari config.local.js (file yang di-gitignore)
-// Jangan hardcode URL di file ini agar tidak ter-commit ke GitHub
 const APPS_SCRIPT_URL =
-  (window.FAMILY_TRACKER_CONFIG && window.FAMILY_TRACKER_CONFIG.APPS_SCRIPT_URL) ||
-  "PASTE_APPS_SCRIPT_URL_HERE";
+  "https://script.google.com/macros/s/AKfycbyVcnpkIO0hctHh5ch3Vv_76hWwAl9i1KJUloh_r4AzvRG_ZokWo-DF1YEVZueHD4g/exec";
 
 // Maksimal akurasi (meter). -1 = tidak ada batas.
 // Catatan: 50m terlalu ketat untuk indoor/WiFi. Disarankan 500-1000m.

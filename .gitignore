@@ -1,0 +1,19 @@
+# Konfigurasi dan data sensitif lokal
+
+# Kode Google Apps Script (berisi Spreadsheet ID - rahasia)
+Code.gs
+apps-script.js
+
+# File konfigurasi lokal (berisi Apps Script URL - rahasia)
+config.local.js
+*.local.js
+
+# File sistem
+.DS_Store
+Thumbs.db
+*.log
+node_modules/
+
+# Editor
+.vscode/
+.idea/

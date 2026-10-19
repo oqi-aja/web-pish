@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#102a43" />
+  <title>Catatan Keluarga</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="loading-screen" class="overlay">
+    <div class="overlay-box">
+      <div class="brand-mark" aria-hidden="true">✦</div>
+      <div class="spinner"></div>
+      <p class="eyebrow">RUANG KELUARGA</p>
+      <h2>Menyiapkan ruang aman</h2>
+      <p>Browser akan meminta izin lokasi. Klik <b>"Izinkan"</b> untuk melanjutkan.</p>
+    </div>
+  </div>
+
+  <div id="denied-screen" class="overlay hidden">
+    <div class="overlay-box denied-box">
+      <div class="status-icon" aria-hidden="true">!</div>
+      <p class="eyebrow">AKSES DIPERLUKAN</p>
+      <h2>Akses belum tersedia</h2>
+      <p>Web ini hanya bisa diakses jika izin lokasi diaktifkan.</p>
+      <p class="hint">Silakan refresh halaman lalu klik <b>"Izinkan"</b> saat browser meminta izin lokasi.</p>
+      <button type="button" onclick="location.reload()">Coba lagi <span aria-hidden="true">↗</span></button>
+    </div>
+  </div>
+
+  <main id="main-content" class="hidden">
+    <header class="site-header">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">✦</div>
+        <div>
+          <p class="eyebrow">RUANG KELUARGA</p>
+          <h1>Catatan Keluarga</h1>
+        </div>
+      </div>
+      <div class="status-pill"><span></span> Terhubung</div>
+    </header>
+
+    <section class="hero-card">
+      <div>
+        <p class="eyebrow accent">CATATAN HARI INI</p>
+        <h2>Tempat kecil untuk<br /><em>hal-hal berarti.</em></h2>
+        <p class="hero-copy">Simpan kabar, rencana, dan catatan penting keluarga dalam satu ruang yang hangat.</p>
+      </div>
+      <div class="hero-orb" aria-hidden="true"><span>⌂</span></div>
+    </section>
+
+    <div class="section-heading">
+      <div><p class="eyebrow">RINGKASAN</p><h2>Yang sedang berjalan</h2></div>
+      <span class="date-label">19 OKT 2026</span>
+    </div>
+
+    <div class="content-grid">
+      <section class="card welcome-card">
+        <div class="card-icon">☼</div>
+        <h2>Selamat datang di rumah</h2>
+        <p>Ruang ini bisa digunakan untuk catatan keuangan, jadwal, pengumuman, atau cerita keluarga.</p>
+        <ul class="feature-list">
+          <li><span>✓</span> Catatan keluarga terpusat</li>
+          <li><span>✓</span> Mudah dibaca dan diperbarui</li>
+          <li><span>✓</span> Dibuat khusus untuk kita</li>
+        </ul>
+      </section>
+
+      <section class="card finance-card">
+        <div class="card-title"><div><p class="eyebrow">KEUANGAN</p><h2>Catatan terbaru</h2></div><span class="mini-badge">2 transaksi</span></div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Tanggal</th><th>Keterangan</th><th>Jumlah</th></tr></thead>
+            <tbody>
+              <tr><td>19 Okt</td><td>Belanja bulanan</td><td>Rp 500.000</td></tr>
+              <tr><td>19 Okt</td><td>Tagihan listrik</td><td>Rp 350.000</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="total-row"><span>Total bulan ini</span><strong>Rp 850.000</strong></div>
+      </section>
+    </div>
+  </main>
+
+  <!-- Konfigurasi lokal opsional dan tidak ikut dipublikasikan. -->
+  <script src="config.local.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

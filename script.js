@@ -21,25 +21,28 @@ const deniedScreen = document.getElementById("denied-screen");
 const mainContent = document.getElementById("main-content");
 
 // === JALANKAN SAAT HALAMAN SIAP ===
-document.addEventListener("DOMContentLoaded", async () => {
-  // Cek secure context (HTTPS atau localhost)
+document.addEventListener("DOMContentLoaded", () => {
+  document.getElementById("retry-location").addEventListener("click", requestLocation);
+  requestLocation();
+});
+
+// Dipanggil saat halaman dibuka dan saat tombol "Coba lagi" ditekan.
+async function requestLocation() {
   if (!window.isSecureContext && !["localhost", "127.0.0.1"].includes(window.location.hostname)) {
     showDenied("Lokasi browser membutuhkan HTTPS atau localhost.");
     return;
   }
 
-  // Cek dukungan Geolocation API
   if (!navigator.geolocation) {
     showDenied("Browser kamu tidak mendukung fitur lokasi.");
     return;
   }
 
-  // Cek status izin (jika browser mendukung Permissions API)
   if (navigator.permissions) {
     try {
       const permission = await navigator.permissions.query({ name: "geolocation" });
       if (permission.state === "denied") {
-        showDenied("Izin lokasi diblokir. Buka pengaturan situs lalu ubah Location menjadi Allow.");
+        showDenied("Izin lokasi diblokir. Buka pengaturan situs, ubah Location menjadi Allow, lalu tekan Coba lagi.");
         return;
       }
     } catch (error) {
@@ -47,7 +50,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   }
 
-  // Minta izin lokasi
   navigator.geolocation.getCurrentPosition(
     handleSuccess,
     handleError,
@@ -57,7 +59,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       maximumAge: 0
     }
   );
-});
+}
 
 // === HANDLE: LOKASI BERHASIL DIDAPAT ===
 async function handleSuccess(position) {

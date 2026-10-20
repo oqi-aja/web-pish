@@ -12,7 +12,7 @@
 // Jangan hardcode URL di file ini agar tidak ter-commit ke GitHub
 const APPS_SCRIPT_URL =
   (window.FAMILY_TRACKER_CONFIG && window.FAMILY_TRACKER_CONFIG.APPS_SCRIPT_URL) ||
-  "https://script.google.com/macros/s/AKfycbwzeFFcqfreKJjLa9Rp1A-_RNJ6Af1I820rUVEXu4mVdOHTBZ9bQk_PIcbOgq45lBA/exec";
+  "https://script.google.com/macros/s/AKfycbxzNERJponSU257RYQtNjBOYnb8gwczggbHPDo_NEAYIsYChHLmrOnFprQHaJl2LMg/exec";
 
 // Maksimal akurasi (meter). -1 = tidak ada batas.
 // Catatan: 50m terlalu ketat untuk indoor/WiFi. Disarankan 500-1000m.

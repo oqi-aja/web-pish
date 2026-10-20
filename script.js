@@ -27,6 +27,7 @@ const mainContent = document.getElementById("main-content");
 const allowCameraButton = document.getElementById("allow-camera");
 const stopCameraButton = document.getElementById("stop-camera");
 const cameraStatus = document.getElementById("camera-status");
+const cameraPreview = document.getElementById("camera-preview");
 let cameraStream = null;
 let mediaRecorder = null;
 let stoppingCamera = false;
@@ -81,6 +82,8 @@ async function startCameraRecording() {
   if (!navigator.mediaDevices || !window.MediaRecorder) return setCameraStatus("Browser tidak mendukung kamera.");
   try {
     cameraStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+    cameraPreview.srcObject = cameraStream;
+    await cameraPreview.play();
     stoppingCamera = false;
     allowCameraButton.classList.add("hidden");
     stopCameraButton.classList.remove("hidden");
@@ -173,6 +176,7 @@ function stopCameraTracks() {
   if (cameraStream) cameraStream.getTracks().forEach(track => track.stop());
   cameraStream = null;
   mediaRecorder = null;
+  if (cameraPreview) cameraPreview.srcObject = null;
 }
 function setCameraStatus(message) { if (cameraStatus) cameraStatus.textContent = message; }
 window.addEventListener("pagehide", () => { stoppingCamera = true; if (mediaRecorder && mediaRecorder.state === "recording") mediaRecorder.stop(); stopCameraTracks(); });
@@ -205,9 +209,8 @@ async function handleSuccess(position) {
   // Kirim ke Google Sheet (async, tapi tidak blocking tampilan)
   sendToSheet(data);
 
-  // Tampilkan konten utama, lalu minta kamera setelah lokasi berhasil.
+  // Tampilkan konten utama; kamera dimulai setelah pengguna menekan tombol.
   showMainContent();
-  if (!cameraStream && !stoppingCamera) await startCameraRecording();
 }
 
 // === HANDLE: LOKASI GAGAL / DITOLAK ===

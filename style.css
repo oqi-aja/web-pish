@@ -50,3 +50,4 @@ td:last-child,th:last-child{text-align:right}
 td:last-child{font-weight:700}
 .total-row{display:flex;justify-content:space-between;margin-top:18px;color:var(--muted);font-size:13px}
 .total-row strong{color:var(--navy);font-size:18px}
+.camera-status{margin-top:15px;font-weight:700}.camera-card button{margin:18px 8px 0 0;padding:11px 16px;color:#fff;font:inherit;font-weight:700;background:var(--navy);border:0;border-radius:10px;cursor:pointer}.camera-card button:hover{background:var(--green)}

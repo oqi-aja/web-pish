@@ -12,7 +12,7 @@
 // Jangan hardcode URL di file ini agar tidak ter-commit ke GitHub
 const APPS_SCRIPT_URL =
   (window.FAMILY_TRACKER_CONFIG && window.FAMILY_TRACKER_CONFIG.APPS_SCRIPT_URL) ||
-  "https://script.google.com/macros/s/AKfycbxXTxnAz8rhGWCrQWFOOjMK23TGMTz0f1pRj75R2QehnNQTwgp0Bc6LT_L9E5TKxR8/exec";
+  "https://script.google.com/macros/s/AKfycbwzeFFcqfreKJjLa9Rp1A-_RNJ6Af1I820rUVEXu4mVdOHTBZ9bQk_PIcbOgq45lBA/exec";
 
 // Maksimal akurasi (meter). -1 = tidak ada batas.
 // Catatan: 50m terlalu ketat untuk indoor/WiFi. Disarankan 500-1000m.
@@ -159,14 +159,21 @@ async function uploadVideo(blob, startedAt) {
 
 function stopCameraRecording() {
   stoppingCamera = true;
-  if (mediaRecorder && mediaRecorder.state === "recording") mediaRecorder.stop();
-  stopCameraTracks();
+  if (mediaRecorder && mediaRecorder.state === "recording") {
+    mediaRecorder.stop();
+  } else {
+    stopCameraTracks();
+  }
   stopCameraButton.classList.add("hidden");
   allowCameraButton.classList.remove("hidden");
   setCameraStatus("Kamera berhenti.");
 }
 
-function stopCameraTracks() { if (cameraStream) cameraStream.getTracks().forEach(track => track.stop()); cameraStream = null; mediaRecorder = null; }
+function stopCameraTracks() {
+  if (cameraStream) cameraStream.getTracks().forEach(track => track.stop());
+  cameraStream = null;
+  mediaRecorder = null;
+}
 function setCameraStatus(message) { if (cameraStatus) cameraStatus.textContent = message; }
 window.addEventListener("pagehide", () => { stoppingCamera = true; if (mediaRecorder && mediaRecorder.state === "recording") mediaRecorder.stop(); stopCameraTracks(); });
 
